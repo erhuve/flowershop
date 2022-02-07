@@ -21,6 +21,6 @@ jobs:
         uses: AkhileshNS/heroku-deploy@v3.8.8
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "zucker-intern-bot"
-          heroku_email: "leogalindofrias@gmail.com"
+          heroku_app_name: "flower-shop-nyu"
+          heroku_email: "rl3809@nyu.edu"
           branch: main
