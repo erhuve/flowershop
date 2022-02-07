@@ -1,1 +1,1 @@
-worker: python3 ./hnys.py
+worker: python3 hnys.py
