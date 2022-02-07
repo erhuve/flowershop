@@ -1,3 +1,8 @@
+# FLOWER SHOP: A Discreet User-Mod Interaction Bot for Discord
+Forked from Zuckerbot; read below
+Actually, these bots ended up being pretty different. But it was a good fork to get me started and included stuff for Heroku deployment already xd.
+The guys who put that together are far more talented than me, check them out!
+I made this for the NYU Discord server to let users open tickets with the mods without needing to broadcast it in a public bot command channel.
 # ZUCKERBOT: A simple mod bot for discord 
 * Forwards messsages between users' dm and an indicated mod channel
 * mods can approve a user's role by reacting with a checkmark 
