@@ -1,1 +1,1 @@
-worker: python3 zuck.py
+worker: python3 hnys.py
