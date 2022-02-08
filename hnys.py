@@ -143,7 +143,7 @@ async def on_button_click(interaction):
         with open('counter.json', 'r') as f:
             counters1 = json.load(f) # Open and load the file
         new_channel = await GUILD.create_text_channel(prefix + str(interaction.user) + "-" + str(counters1), category=category, overwrites=overwrites)
-        await new_channel.send("{} Thank you for opening a ticket. {} will be here to help you shortly.".format(mod_role.mention, interaction.user.mention))
+        await new_channel.send("{} Thank you for opening a ticket. {} will be here to help you shortly.".format(interaction.user.mention, mod_role.mention))
         await interaction.respond()
 
 @bot.command() # not really
