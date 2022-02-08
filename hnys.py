@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import discord
 import random
+import json
 from discord.ext import commands
 from discord_components import DiscordComponents, ComponentsBot, Button
 
@@ -105,6 +106,16 @@ FLOWERS = ["🌸", "🌹", "🌺", "🌻", "🌼", "🌷"]
 
 ################################
 
+def load_counters():
+    with open('counter.json', 'r') as f: 
+        counters = json.load(f)
+    return counters
+
+
+def save_counters(counters):
+    with open('counter.json', 'w') as f:
+        json.dump(counters, f)
+
 
 
 @bot.event
@@ -116,6 +127,9 @@ async def on_ready():
 @bot.event
 async def on_button_click(interaction):
     if interaction.component.id == "ticket":
+        counters = load_counters()
+        counters["tickets"] += 1
+        save_counters(counters)
         ind = random.randrange(0, len(FLOWERS))
         prefix = FLOWERS[ind]
         category = discord.utils.get(GUILD.categories, id=MOD_CATEGORY_ID)
@@ -126,7 +140,9 @@ async def on_button_click(interaction):
             mod_role: discord.PermissionOverwrite(read_messages=True, send_messages=True),
             interaction.user: discord.PermissionOverwrite(read_messages=True, send_messages=True),
         }
-        await GUILD.create_text_channel(prefix + str(interaction.user), category=category, overwrites=overwrites)
+        with open('counter.json', 'r') as f:
+            counters1 = json.load(f) # Open and load the file
+        await GUILD.create_text_channel(prefix + str(interaction.user) + "-" + str(counters1), category=category, overwrites=overwrites)
         await interaction.respond()
 
 @bot.command() # not really
