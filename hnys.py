@@ -153,9 +153,7 @@ async def button(ctx):
     buttons = [Button(label="%s Open a Ticket" % EMOJI_MAIL, id="ticket")]
     embed = Embed(
             title="Tickets", 
-            description="""If you'd like to open a ticket to discuss something with the mods,
-            such as advertising in the server or reporting a user, please click the button below.
-            Have a wonderful day!""",
+            description="If you'd like to open a ticket to discuss something with the mods, such as advertising in the server or reporting a user, please click the button below. Have a wonderful day!",
             color=discord.Color.blue()
             )
     await ctx.send(
