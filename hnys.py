@@ -136,13 +136,14 @@ async def on_button_click(interaction):
         mod_role = discord.utils.get(GUILD.roles, id=MOD_ROLE_ID)
         overwrites = {
             GUILD.default_role: discord.PermissionOverwrite(read_messages=False),
-            GUILD.me: discord.PermissionOverwrite(read_messages=True),
+            GUILD.me: discord.PermissionOverwrite(read_messages=True, send_messages=True),
             mod_role: discord.PermissionOverwrite(read_messages=True, send_messages=True),
             interaction.user: discord.PermissionOverwrite(read_messages=True, send_messages=True),
         }
         with open('counter.json', 'r') as f:
             counters1 = json.load(f) # Open and load the file
-        await GUILD.create_text_channel(prefix + str(interaction.user) + "-" + str(counters1), category=category, overwrites=overwrites)
+        new_channel = await GUILD.create_text_channel(prefix + str(interaction.user) + "-" + str(counters1), category=category, overwrites=overwrites)
+        await new_channel.send("{} Thank you for opening a ticket. {} will be here to help you shortly.".format(mod_role.mention, interaction.user.mention))
         await interaction.respond()
 
 @bot.command() # not really
