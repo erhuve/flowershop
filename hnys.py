@@ -1,7 +1,9 @@
 import os
 from dotenv import load_dotenv
 import discord
+import random
 from discord.ext import commands
+from discord_components import DiscordComponents, ComponentsBot, Button
 
 load_dotenv()
 
@@ -16,6 +18,7 @@ GUILD_ID = str(os.getenv("DISCORD_GUILD"))
 MOD_CHANNEL_ID = int(os.getenv("MOD_CHANNEL_ID"))
 MOD_ROLE_ID = int(os.getenv("MOD_ROLE_ID"))
 MOD_CATEGORY_ID = int(os.getenv("MOD_CATEGORY_ID"))
+TICKET_CHANNEL_ID = int(os.getenv("TICKET_CHANNEL_ID"))
 GUILD = None
 
 
@@ -24,6 +27,7 @@ EMOJI_CHECKMARK = "✅"
 EMOJI_ENVELOPE = "✉️"
 EMOJI_EYES = "👀"
 EMOJI_DELETE = "❌"
+EMOJI_MAIL = "📩" # Not confusing
 
 # discord stuff
 client = discord.Client()
@@ -31,7 +35,7 @@ Embed = discord.Embed
 intents = discord.Intents.default()
 intents.reactions = True
 intents.members = True
-bot = commands.Bot(command_prefix="$", description=description, intents=intents)
+bot = ComponentsBot(command_prefix = "!")
 
 ################################
 # MESSAGES #
@@ -96,16 +100,51 @@ BOT_JOKE_PHRASE = (
     "You'll have to pay for that. "
 )
 
+FLOWERS = ["🌸", "🌹", "🌺", "🌻", "🌼", "🌷"]
+
 
 ################################
 
 
-@client.event
-async def on_ready():
-    print("We have logged in as {0.user}".format(client))
-    global GUILD
-    GUILD = client.get_guild(int(GUILD_ID))
 
+@bot.event
+async def on_ready():
+    print("We have logged in as {0.user}".format(bot))
+    global GUILD
+    GUILD = bot.get_guild(int(GUILD_ID))
+
+@bot.event
+async def on_button_click(interaction):
+    if interaction.component.id == "ticket":
+        ind = random.randrange(0, len(FLOWERS))
+        prefix = FLOWERS[ind]
+        category = discord.utils.get(GUILD.categories, id=MOD_CATEGORY_ID)
+        mod_role = discord.utils.get(GUILD.roles, id=MOD_ROLE_ID)
+        overwrites = {
+            GUILD.default_role: discord.PermissionOverwrite(read_messages=False),
+            GUILD.me: discord.PermissionOverwrite(read_messages=True),
+            mod_role: discord.PermissionOverwrite(read_messages=True, send_messages=True),
+            interaction.user: discord.PermissionOverwrite(read_messages=True, send_messages=True),
+        }
+        await GUILD.create_text_channel(prefix + str(interaction.user), category=category, overwrites=overwrites)
+        await interaction.respond()
+
+@bot.command() # not really
+async def button(ctx):
+    if ctx.channel.id != TICKET_CHANNEL_ID:
+        return
+    buttons = [Button(label="%s Open a Ticket" % EMOJI_MAIL, id="ticket")]
+    embed = Embed(
+            title="Tickets", 
+            description="""If you'd like to open a ticket to discuss something with the mods,
+            such as advertising in the server or reporting a user, please click the button below.
+            Have a wonderful day!""",
+            color=discord.Color.blue()
+            )
+    await ctx.send(
+        embed=embed, components=buttons
+    )
+    # interaction = await bot.wait_for("button_click", check = lambda i: i.custom_id == "ticket")
 
 # @client.event
 # async def on_reaction_add(reaction, _user):
@@ -139,7 +178,7 @@ async def on_ready():
 #             await reaction.message.delete()
 
 
-@client.event
+@bot.event
 async def on_message(message):
     """
     The core exchange between bot and a user
@@ -149,44 +188,47 @@ async def on_message(message):
         - message.attachments , a list of attachments such as a picture, a link, etc
         - message.author , the user object that sent the message
     """
-    mod_channel = client.get_channel(MOD_CHANNEL_ID)
+    mod_channel = bot.get_channel(MOD_CHANNEL_ID)
 
-    if message.author == client.user:
-        return
-    if message.content.startswith("$%s give me a flower" % BOT_NAME):  # little easter egg
-        await message.channel.send(BOT_JOKE_PHRASE)
-
-    elif isinstance(message.channel, discord.channel.DMChannel):
-        if str(message.content).lower().startswith("ticket "):
-            # send confirmation to user, then create a channel for the user to communicate with mods
-            category = discord.utils.get(GUILD.categories, id=MOD_CATEGORY_ID)
-            mod_role = discord.utils.get(GUILD.roles, id=MOD_ROLE_ID)
-            print(category)
-            print(mod_role)
-            overwrites = {
-                GUILD.default_role: discord.PermissionOverwrite(read_messages=False),
-                GUILD.me: discord.PermissionOverwrite(read_messages=True),
-                mod_role: discord.PermissionOverwrite(read_messages=True, send_messages=True),
-                message.author: discord.PermissionOverwrite(read_messages=True, send_messages=True),
-            }
-            print(overwrites)
-            await message.channel.send(HELP_IS_ON_WAY)
-            await GUILD.create_text_channel("flwr " +str(message.content)[7:], category=category, overwrites=overwrites)
-        else:
-            await message.channel.send(INITIAL_GREETING)
-    else:
-        if  message.channel.name.startswith("flwr"):
-            if str(message.content).lower().startswith("$archive"):
-                msgs = []
-                async for text in message.channel.history(limit=6969):
-                        msgs.append(str(text.author)+' ('+ str(text.created_at)+'): ' + str(text.content) + "\n")
-                with open ("archive.txt", "w") as archive:
-                    for msg in reversed(msgs):
-                        archive.write(msg)
-                # messages = await message.channel.history(limit=6969).flatten() # Probs wont be that many messages, right??
-                await mod_channel.send("Archiving channel: " + message.channel.name)
-                await mod_channel.send(file=discord.File("archive.txt"))
-                await message.channel.delete()
+    # if message.author == client.user:
+    #     return
+    # if message.content.startswith("$%s give me a flower" % BOT_NAME):  # little easter egg
+    #     await message.channel.send(BOT_JOKE_PHRASE)
+    # # This is how I sent the original message. Best practice, booyah
+    # # if message.content.startswith("Flower Shop, I summon thee. Thoust willst dost myst biddingst sts tstst awawawawawa"):
+        
+    # elif isinstance(message.channel, discord.channel.DMChannel):
+    #     if str(message.content).lower().startswith("ticket "):
+    #         # send confirmation to user, then create a channel for the user to communicate with mods
+    #         category = discord.utils.get(GUILD.categories, id=MOD_CATEGORY_ID)
+    #         mod_role = discord.utils.get(GUILD.roles, id=MOD_ROLE_ID)
+    #         print(category)
+    #         print(mod_role)
+    #         overwrites = {
+    #             GUILD.default_role: discord.PermissionOverwrite(read_messages=False),
+    #             GUILD.me: discord.PermissionOverwrite(read_messages=True),
+    #             mod_role: discord.PermissionOverwrite(read_messages=True, send_messages=True),
+    #             message.author: discord.PermissionOverwrite(read_messages=True, send_messages=True),
+    #         }
+    #         print(overwrites)
+    #         await message.channel.send(HELP_IS_ON_WAY)
+    #         await GUILD.create_text_channel("flwr " +str(message.content)[7:], category=category, overwrites=overwrites)
+    #     else:
+    #         await message.channel.send(INITIAL_GREETING)
+    # else:
+    if  message.channel.name[0] in FLOWERS or message.channel.name.startswith("flwr"):
+        if str(message.content).lower().startswith("$archive"):
+            msgs = []
+            async for text in message.channel.history(limit=6969):
+                    msgs.append(str(text.author)+' ('+ str(text.created_at)+'): ' + str(text.content) + "\n")
+            with open ("archive.txt", "w") as archive:
+                for msg in reversed(msgs):
+                    archive.write(msg)
+            # messages = await message.channel.history(limit=6969).flatten() # Probs wont be that many messages, right??
+            await mod_channel.send("Archiving channel: " + message.channel.name)
+            await mod_channel.send(file=discord.File("archive.txt"))
+            await message.channel.delete()
+    await bot.process_commands(message)
 
         # send proof to mod channel, notify mods, and offer reaction options
         # if len(message.attachments) != 0:
@@ -238,4 +280,4 @@ async def on_message(message):
     #     )
 
 
-client.run(TOKEN)
+bot.run(TOKEN)
