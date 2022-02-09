@@ -234,15 +234,34 @@ async def on_message(message):
     if  message.channel.name[0] in FLOWERS or message.channel.name.startswith("flwr"):
         if str(message.content).lower().startswith("$archive"):
             msgs = []
+            attachment_counter = 0
+            attachment_string = ''
             async for text in message.channel.history(limit=6969):
-                    msgs.append(str(text.author)+' ('+ str(text.created_at)+'): ' + str(text.content) + "\n")
+                if len(text.attachments) > 0:
+                    for att in text.attachments:
+                        attachment_counter += 1
+                        attachment_string += 'attachment_{}'.format(str(attachment_counter))
+                        await att.save('attachments/{}'.format(att.filename))
+                msgs.append(str(text.author)+' ('+ str(text.created_at)+'): ' + str(text.content) + attachment_string + "\n")
             with open ("archive.txt", "w") as archive:
                 for msg in reversed(msgs):
                     archive.write(msg)
             # messages = await message.channel.history(limit=6969).flatten() # Probs wont be that many messages, right??
+            files = []
+            for file in os.listdir('attachments'):
+                files.append(file)
             await mod_channel.send("Archiving channel: " + message.channel.name)
             await mod_channel.send(file=discord.File("archive.txt"))
+            for file in files:
+                await mod_channel.send(file=discord.File(file))
             await message.channel.delete()
+            # Clean up our attachments folder so I don't pass some limits on Heroku
+            for filename in os.listdir('attachments'):
+                file_path = os.path.join('attachments', filename)
+                try:
+                    os.unlink(file_path)
+                except Exception as e:
+                    print('Failed to delete %s. Reason: %s' % (file_path, e))
     await bot.process_commands(message)
 
         # send proof to mod channel, notify mods, and offer reaction options
