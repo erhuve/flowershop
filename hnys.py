@@ -241,7 +241,8 @@ async def on_message(message):
                     for att in text.attachments:
                         attachment_counter += 1
                         attachment_string += 'attachment_{}'.format(str(attachment_counter))
-                        await att.save('attachments/{}'.format(att.filename))
+                        await att.save(att.filename)
+                        os.rename(att.filename, 'attachments/{}'.format(att.filename))
                 msgs.append(str(text.author)+' ('+ str(text.created_at)+'): ' + str(text.content) + attachment_string + "\n")
             with open ("archive.txt", "w") as archive:
                 for msg in reversed(msgs):
