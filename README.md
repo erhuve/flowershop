@@ -16,5 +16,6 @@ You can set up this application for your own bot and your own server. Locally, y
 * MOD_ROLE_ID="`THE ID OF THE MODERATOR ROLE IN YOUR SERVER`"
 * MOD_CATEGORY_ID="`THE ID OF THE CATEGORY THAT WILL HOUSE TICKETS`"
 * TICKET_CHANNEL_ID="`THE ID OF THE CHANNEL THAT YOU WILL INITIALIZE FLOWER SHOP'S TICKETING SYSTEM IN`"
+
 Follow [these steps](https://medium.com/analytics-vidhya/how-to-host-a-discord-py-bot-on-heroku-and-github-d54a4d62a99e) for deploying your bot to Heroku to keep it always running. Unless you've made significant changes, you probably only need to start from `HOSTING ON HEROKU` (keeping in mind to change your `Config Vars` as mentioned above).
 If you're confused about the IDs of channels, categories, roles, etc. follow [these steps](https://www.howtogeek.com/714348/how-to-enable-or-disable-developer-mode-on-discord/) to enable developer mode on your Discord so that you can copy IDs.
