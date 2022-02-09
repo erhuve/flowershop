@@ -240,7 +240,7 @@ async def on_message(message):
                 if len(text.attachments) > 0:
                     for att in text.attachments:
                         attachment_counter += 1
-                        attachment_string += '[Attachment-{}-{}]'.format(str(attachment_counter, att.filename))
+                        attachment_string += '[Attachment-{}-{}]'.format(str(attachment_counter), att.filename)
                         await att.save(att.filename)
                         os.rename(att.filename, 'attachments/{}-{}'.format(attachment_counter, att.filename))
                 msgs.append(str(text.author)+' ('+ str(text.created_at)+'): ' + str(text.content) + attachment_string + "\n")
