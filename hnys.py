@@ -254,7 +254,8 @@ async def on_message(message):
             await mod_channel.send("Archiving channel: " + message.channel.name)
             await mod_channel.send(file=discord.File("archive.txt"))
             for file in files:
-                await mod_channel.send(file=discord.File(file))
+                file_path = os.path.join('attachments', file)
+                await mod_channel.send(file=discord.File(file_path))
             await message.channel.delete()
             # Clean up our attachments folder so I don't pass some limits on Heroku
             for filename in os.listdir('attachments'):
