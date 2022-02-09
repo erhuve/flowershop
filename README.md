@@ -2,9 +2,17 @@
 ![image](https://user-images.githubusercontent.com/59463268/152920000-be5430f7-cdd2-4694-905a-cc2ee0e686ee.png)
 ![image](https://user-images.githubusercontent.com/59463268/152920027-a400e19c-f82b-46c9-b52c-5b3aea095138.png)
 Originally a fork of Zuckerbot, but ended up being a completely different bot!
+
 Regardless, it was a great way to boostrap the project, kudos and thanks to my friends who developed it.
+
 The guys who put that together are far more talented than me, check them out!
-I made this for the NYU Discord server to let users open tickets with the mods without needing to broadcast it in a public bot command channel. Flower Shop creates a user-friendly experience with a single button users click to create a private channel with them and the moderators. For moderators, once they close a ticket, the log is saved, including any attached files such as images.
+
+
+I made this for the NYU Discord server to let users open tickets with the mods without needing to broadcast it in a public bot command channel. 
+
+Flower Shop creates a user-friendly experience with a single button users click to create a private channel with them and the moderators. 
+
+For moderators, once they close a ticket, the log is saved, including any attached files such as images.
 ## Commands
 * `!button`: Initializes the message with the button for users to click. You can delete your message with this command afterwards, or edit it to provide information to your users about the ticketing system.
 * `$archive`: To be used by moderators in a created ticket channel when done. This will delete the channel and save a log of the messages and any attachments (this will be saved in a separate channel you have created to keep logs)
