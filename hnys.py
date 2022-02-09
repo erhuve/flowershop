@@ -254,6 +254,8 @@ async def on_message(message):
             await mod_channel.send("Archiving channel: " + message.channel.name)
             await mod_channel.send(file=discord.File("archive.txt"))
             for file in files:
+                if file == '.gitignore' or file == 'gitignore':
+                    continue
                 file_path = os.path.join('attachments', file)
                 await mod_channel.send(file=discord.File(file_path))
             await message.channel.delete()
