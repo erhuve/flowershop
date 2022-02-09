@@ -240,9 +240,9 @@ async def on_message(message):
                 if len(text.attachments) > 0:
                     for att in text.attachments:
                         attachment_counter += 1
-                        attachment_string += 'attachment_{}'.format(str(attachment_counter))
+                        attachment_string += '[Attachment-{}-{}]'.format(str(attachment_counter, att.filename))
                         await att.save(att.filename)
-                        os.rename(att.filename, 'attachments/{}'.format(att.filename))
+                        os.rename(att.filename, 'attachments/{}-{}'.format(attachment_counter, att.filename))
                 msgs.append(str(text.author)+' ('+ str(text.created_at)+'): ' + str(text.content) + attachment_string + "\n")
             with open ("archive.txt", "w") as archive:
                 for msg in reversed(msgs):
@@ -257,7 +257,7 @@ async def on_message(message):
                 if file == '.gitignore' or file == 'gitignore':
                     continue
                 file_path = os.path.join('attachments', file)
-                await mod_channel.send(file=discord.File(file_path))
+                await mod_channel.send("Attachment {}".format(file), file=discord.File(file_path))
             await message.channel.delete()
             # Clean up our attachments folder so I don't pass some limits on Heroku
             for filename in os.listdir('attachments'):
